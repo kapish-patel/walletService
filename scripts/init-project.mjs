@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
@@ -6,6 +6,7 @@ const rootDir = process.cwd();
 const envPath = resolve(rootDir, '.env');
 const envExamplePath = resolve(rootDir, '.env.example');
 const envOnly = process.argv.includes('--env-only');
+const defaultBearerToken = 'N2w7e2iB7v7ivCJBN2UAltR8';
 
 function parseEnv(content) {
   const result = {};
@@ -31,8 +32,17 @@ function hasPlaceholderValues(env) {
     !env.DB_USER ||
     !env.DB_NAME ||
     !env.DB_PASSWORD ||
-    env.DB_PASSWORD === 'your_password'
+    env.DB_PASSWORD === 'your_password' ||
+    !env.BEARER_TOKEN
   );
+}
+
+function ensureBearerToken(content) {
+  if (/^BEARER_TOKEN=/m.test(content)) {
+    return content;
+  }
+
+  return `${content.replace(/\s*$/, '')}\nBEARER_TOKEN=${defaultBearerToken}\n`;
 }
 
 if (!existsSync(envPath)) {
@@ -41,10 +51,19 @@ if (!existsSync(envPath)) {
     process.exit(1);
   }
 
-  copyFileSync(envExamplePath, envPath);
+  const envExampleContent = readFileSync(envExamplePath, 'utf-8');
+  writeFileSync(envPath, ensureBearerToken(envExampleContent));
   console.log('Created .env from .env.example');
 } else {
   console.log('.env already exists, skipping file creation');
+
+  const currentEnv = readFileSync(envPath, 'utf-8');
+  const updatedEnv = ensureBearerToken(currentEnv);
+
+  if (updatedEnv !== currentEnv) {
+    writeFileSync(envPath, updatedEnv);
+    console.log('Added BEARER_TOKEN to .env');
+  }
 }
 
 if (envOnly) {

@@ -10,7 +10,7 @@
     "bootstrap": "npm install && npm run init",
     "init": "node scripts/init-project.mjs",
     "env:init": "node scripts/init-project.mjs --env-only",
-    "dev": "tsx src/index.ts",
+    "dev": "npx nodemon src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
@@ -29,7 +29,8 @@
     "jest": "^29.7.0",
     "nodemon": "^3.1.14",
     "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   }
 }

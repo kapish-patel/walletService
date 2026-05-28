@@ -3,6 +3,8 @@ import type { AddressInfo } from 'node:net';
 
 import { app } from '../src/index.js';
 
+const bearerToken = process.env.BEARER_TOKEN;
+
 let server: ReturnType<typeof app.listen>;
 let baseUrl: string;
 
@@ -32,16 +34,30 @@ afterAll(async () => {
 });
 
 describe('GET /', () => {
-  it('returns the hello-world payload', async () => {
+  it('rejects requests without a bearer token', async () => {
     const response = await fetch(`${baseUrl}/`);
+
+    expect(response.status).toBe(401);
+  });
+
+  it('returns the hello-world payload when the bearer token matches', async () => {
+    const response = await fetch(`${baseUrl}/`, {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    });
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ message: 'Hello, World!' });
   });
 
-  it('returns 404 for unknown routes', async () => {
-    const response = await fetch(`${baseUrl}/missing`);
+  it('returns 401 for unknown token', async () => {
+    const response = await fetch(`${baseUrl}/`, {
+      headers: {
+        Authorization: `Bearer invalid-token`,
+      },
+    });
 
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(401);
   });
 });
