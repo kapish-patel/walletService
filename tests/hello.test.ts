@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import type { AddressInfo } from 'node:net';
 
-import { app } from '../src/index.js';
+import { app } from '../src/app';
 
 const bearerToken = process.env.BEARER_TOKEN;
 

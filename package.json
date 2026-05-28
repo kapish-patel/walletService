@@ -5,14 +5,14 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "bootstrap": "npm install && npm run init",
     "init": "node scripts/init-project.mjs",
     "env:init": "node scripts/init-project.mjs --env-only",
-    "dev": "npx nodemon src/index.ts",
+    "dev": "npx nodemon src/server.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "db:check": "tsx src/scripts/check-db.ts"
   },
